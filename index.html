@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silverpush · Global Leadership Summit 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ──────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0D1B3E;--teal:#0D9E8E;--teal-lt:rgba(13,158,142,.12);
+  --bg:#F4F6FB;--surface:#fff;--border:#E2E6F0;
+  --text:#0D1B3E;--muted:#6B7280;
+  --live:#0D9E8E;--live-lt:#D0F3EF;
+  --beta:#F59E0B;--beta-lt:#FEF3C7;
+  --dev:#3B82F6;--dev-lt:#DBEAFE;
+  --planning:#8B5CF6;--plan-lt:#EDE9FE;
+  --roadmap:#9CA3AF;--road-lt:#F3F4F6;
+  --sidebar:64px;
+}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;font-weight:400;background:var(--navy);}
+
+/* ─── SIDEBAR ──────────────────────────────────────────────── */
+#sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);
+  background:rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.07);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  z-index:100;
+}
+.nav-dot{
+  width:36px;height:36px;border-radius:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;gap:3px;
+  transition:background .2s,transform .2s;position:relative;
+}
+.nav-dot:hover{background:rgba(255,255,255,.08);}
+.nav-dot.active{background:var(--teal);}
+.nav-dot .nd-num{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.4);line-height:1;}
+.nav-dot.active .nd-num{color:#fff;}
+.nav-dot .nd-label{
+  position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+  background:var(--navy);color:#fff;font-size:11px;font-weight:500;white-space:nowrap;
+  padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.nav-dot:hover .nd-label{opacity:1;}
+.nav-sep{width:20px;height:1px;background:rgba(255,255,255,.08);margin:4px 0;}
+
+/* ─── SLIDE COUNTER ────────────────────────────────────────── */
+#counter{
+  position:fixed;bottom:20px;right:24px;font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;color:rgba(255,255,255,.3);z-index:100;letter-spacing:.06em;
+}
+
+/* ─── ARROW HINTS ──────────────────────────────────────────── */
+.arrow-hint{
+  position:fixed;top:50%;transform:translateY(-50%);z-index:90;
+  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .2s,opacity .2s;opacity:.4;
+}
+.arrow-hint:hover{background:rgba(255,255,255,.14);opacity:1;}
+#arr-prev{left:calc(var(--sidebar) + 12px);}
+#arr-next{right:12px;}
+.arrow-hint svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ─── SLIDES CONTAINER ─────────────────────────────────────── */
+#deck{
+  margin-left:var(--sidebar);height:100vh;overflow:hidden;position:relative;
+}
+.slide{
+  position:absolute;inset:0;overflow:hidden;
+  opacity:0;transition:opacity .45s ease,transform .45s ease;
+  pointer-events:none;transform:translateX(30px);
+}
+.slide.active{opacity:1;pointer-events:auto;transform:translateX(0);}
+.slide.prev{opacity:0;transform:translateX(-30px);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SLIDE 1 — COVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#s1{background:var(--navy);display:flex;flex-direction:column;}
+.s1-glow{
+  position:absolute;top:-100px;right:-100px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(13,158,142,.18) 0%,transparent 65%);
+  pointer-events:none;
+}
+.s1-glow2{
+  position:absolute;bottom:-150px;left:30%;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(13,158,142,.08) 0%,transparent 65%);
+  pointer-events:none;
+}
+.s1-header{
+  padding:28px 44px;display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.sp-brand{display:flex;align-items:center;gap:12px;}
+.sp-dot{
+  width:38px;height:38px;background:var(--teal);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+.sp-dot span{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#fff;letter-spacing:.04em;}
+.sp-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.s1-date{font-size:12px;color:rgba(255,255,255,.35);font-weight:400;letter-spacing:.06em;}
+.s1-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px;position:relative;z-index:1;
+}
+.s1-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(13,158,142,.15);border:1px solid rgba(13,158,142,.3);
+  border-radius:100px;padding:6px 18px;margin-bottom:32px;
+}
+.s1-tag-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);}
+.s1-tag span{font-size:12px;font-weight:500;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;}
+.s1-title{
+  font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,64px);font-weight:800;
+  color:#fff;line-height:1.1;margin-bottom:20px;
+}
+.s1-title em{color:var(--teal);font-style:normal;}
+.s1-sub{font-size:clamp(14px,1.8vw,20px);color:rgba(255,255,255,.5);font-weight:300;margin-bottom:48px;letter-spacing:.02em;}
+.s1-pills{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.s1-pill{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:100px;padding:8px 20px;font-size:13px;color:rgba(255,255,255,.6);
+}
+.s1-footer{
+  padding:24px 44px;border-top:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;gap:32px;
+  position:relative;z-index:1;
+}
+.s1-footer span{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.06em;}
+.s1-start-btn{
+  margin-top:40px;padding:14px 36px;background:var(--teal);border:none;border-radius:12px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+  letter-spacing:.04em;transition:opacity .2s,transform .2s;
+}
+.s1-start-btn:hover{opacity:.85;transform:translateY(-1px);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SLIDE 2 — AGENDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#s2{background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+.slide-topbar{
+  background:var(--navy);padding:18px 44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.slide-topbar .sp-brand .sp-name{font-size:15px;}
+.slide-label{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;}
+.s2-body{flex:1;overflow-y:auto;padding:28px 44px 40px;}
+.s2-body::-webkit-scrollbar{width:4px;}
+.s2-body::-webkit-scrollbar-track{background:transparent;}
+.s2-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;}
+.s2-heading{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--navy);margin-bottom:24px;}
+.sessions-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.session-card{border-radius:16px;overflow:hidden;border:1px solid var(--border);background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.session-hd{padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.session-hd-left{display:flex;flex-direction:column;gap:4px;}
+.session-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;}
+.session-time{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;}
+.session-dur{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+  border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;
+}
+.session1 .session-hd{background:linear-gradient(135deg,#0D1B3E 0%,#1E3A6E 100%);}
+.session1 .session-num{color:rgba(255,255,255,.6);}
+.session2 .session-hd{background:linear-gradient(135deg,#065F59 0%,#0D9E8E 100%);}
+.session2 .session-num{color:rgba(255,255,255,.6);}
+.session-blocks{padding:8px 0;}
+.block-row{
+  display:flex;align-items:flex-start;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.block-row:last-child{border-bottom:none;}
+.block-row:hover{background:#FAFBFE;}
+.block-time{font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap;min-width:80px;padding-top:1px;font-family:'Syne',sans-serif;}
+.block-content{flex:1;min-width:0;}
+.block-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.3;}
+.block-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.block-meta{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.avatar-group{display:flex;gap:-4px;}
+.avatar{
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:#fff;font-family:'Syne',sans-serif;
+  border:2px solid #fff;flex-shrink:0;
+}
+.dur-pill{
+  background:var(--teal-lt);border:1px solid rgba(13,158,142,.2);
+  border-radius:100px;padding:2px 8px;font-size:10px;font-weight:600;color:var(--teal);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SLIDE 3 — ROADMAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#s3{background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+.s3-topbar{
+  background:var(--navy);padding:16px 44px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;
+}
+.s3-topbar-left{display:flex;align-items:center;gap:20px;}
+.s3-topbar-right{display:flex;align-items:center;gap:10px;}
+.dl-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--teal);border:none;border-radius:9px;padding:8px 16px;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;
+  cursor:pointer;letter-spacing:.04em;transition:opacity .2s;
+}
+.dl-btn:hover{opacity:.85;}
+.dl-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.legend-bar-inline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.03em;white-space:nowrap;}
+.b-live{background:var(--live-lt);color:#065F59;}
+.b-beta{background:var(--beta-lt);color:#92400E;}
+.b-dev{background:var(--dev-lt);color:#1E40AF;}
+.b-planning{background:var(--plan-lt);color:#5B21B6;}
+.b-roadmap{background:var(--road-lt);color:#4B5563;}
+.s3-body{flex:1;overflow-y:auto;padding:20px 44px 40px;}
+.s3-body::-webkit-scrollbar{width:4px;}
+.s3-body::-webkit-scrollbar-track{background:transparent;}
+.s3-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;}
+.legend-strip{
+  background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 16px;
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.legend-lbl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:4px;}
+/* Sections */
+.rm-section{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:box-shadow .2s;margin-bottom:12px;}
+.rm-section:hover{box-shadow:0 4px 18px rgba(0,0,0,.08);}
+.rm-section-hd{display:flex;align-items:center;gap:16px;padding:14px 20px;cursor:pointer;user-select:none;border-left:5px solid var(--sec-color);transition:background .15s;}
+.rm-section-hd:hover{background:#FAFBFE;}
+.rm-sec-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--sec-bg);}
+.rm-sec-info{flex:1;}
+.rm-sec-info h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--sec-color);}
+.rm-sec-info p{font-size:11px;color:var(--muted);margin-top:1px;}
+.rm-sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.count-pill{background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:2px 10px;font-size:11px;color:var(--muted);font-weight:500;}
+.chevron{width:16px;height:16px;color:var(--muted);transition:transform .25s ease;flex-shrink:0;}
+.rm-section.open .chevron{transform:rotate(180deg);}
+.rm-expand{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
+.rm-section.open .rm-expand{max-height:5000px;}
+.poc-bar{padding:8px 20px;background:#F9FAFD;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.poc-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-right:4px;}
+.poc-tag{display:inline-flex;align-items:center;gap:5px;margin-right:8px;}
+.poc-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Syne',sans-serif;}
+.poc-name{font-size:11px;color:var(--text);}
+.feat-table{width:100%;border-collapse:collapse;}
+.feat-table thead tr{background:var(--navy);}
+.feat-table thead th{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.08em;padding:8px 14px;text-align:left;white-space:nowrap;}
+.feat-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+.feat-table tbody tr:last-child{border-bottom:none;}
+.feat-table tbody tr:hover{background:#F9FAFD;}
+.feat-table td{padding:9px 14px;font-size:12px;vertical-align:middle;color:var(--text);}
+.td-feature{font-weight:500;min-width:200px;max-width:320px;}
+.td-desc{font-size:11px;color:var(--muted);}
+.td-launch{font-size:11px;color:var(--muted);white-space:nowrap;font-weight:500;}
+/* Gantt */
+.gantt-wrap{padding:14px 20px 18px;background:#F4F6FB;border-top:2px solid var(--border);}
+.gantt-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.gantt-title::before{content:'';display:inline-block;width:3px;height:10px;background:var(--sec-color);border-radius:2px;}
+.gantt-header-row{display:flex;align-items:center;margin-bottom:4px;}
+.gantt-lbl-spacer{width:220px;flex-shrink:0;}
+.gantt-q-row{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.gantt-q{font-size:9px;font-weight:700;color:var(--navy);text-align:center;font-family:'Syne',sans-serif;letter-spacing:.03em;padding:3px 0;background:#fff;border-radius:4px;border:1px solid var(--border);}
+.gantt-grid{display:flex;flex-direction:column;gap:5px;}
+.gantt-row{display:flex;align-items:center;min-height:24px;}
+.gantt-label{width:220px;flex-shrink:0;font-size:10.5px;color:var(--text);padding-right:10px;line-height:1.3;}
+.gantt-tl{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.gantt-cell{height:20px;border-radius:4px;}
+.gantt-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:9px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gantt-empty{height:100%;background:rgba(0,0,0,.04);border-radius:4px;}
+.status-pills{display:flex;gap:4px;flex-wrap:wrap;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PLACEHOLDER SLIDES (3b, 3c, 3d)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.ph-slide{background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ph-inner{text-align:center;max-width:520px;padding:40px;}
+.ph-icon{font-size:52px;margin-bottom:20px;opacity:.5;}
+.ph-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;}
+.ph-sub{font-size:15px;color:rgba(255,255,255,.4);margin-bottom:32px;line-height:1.6;}
+.ph-drop{
+  border:2px dashed rgba(255,255,255,.15);border-radius:16px;padding:36px 48px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.ph-drop:hover{border-color:var(--teal);background:rgba(13,158,142,.05);}
+.ph-drop-icon{font-size:28px;opacity:.4;}
+.ph-drop p{font-size:13px;color:rgba(255,255,255,.35);}
+.ph-drop p strong{color:rgba(255,255,255,.6);}
+.ph-or{font-size:11px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.1em;}
+.ph-input{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:10px 16px;font-size:13px;color:#fff;width:100%;outline:none;
+  transition:border-color .2s;
+}
+.ph-input::placeholder{color:rgba(255,255,255,.25);}
+.ph-input:focus{border-color:var(--teal);}
+.ph-tag{
+  display:inline-block;background:rgba(13,158,142,.15);border:1px solid rgba(13,158,142,.25);
+  border-radius:100px;padding:4px 14px;font-size:11px;color:var(--teal);font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SLIDE 4 — THANK YOU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#s4{background:var(--navy);display:flex;flex-direction:column;}
+.s4-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(13,158,142,.12) 0%,transparent 60%);pointer-events:none;}
+.s4-header{padding:24px 44px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.s4-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;position:relative;z-index:1;}
+.s4-kicker{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px;}
+.s4-title{font-family:'Syne',sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;color:#fff;line-height:1;margin-bottom:16px;}
+.s4-title em{color:var(--teal);font-style:normal;}
+.s4-sub{font-size:16px;color:rgba(255,255,255,.4);margin-bottom:48px;}
+.s4-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:780px;width:100%;margin-bottom:40px;}
+.s4-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:20px;text-align:left;transition:background .2s,border-color .2s;
+}
+.s4-card:hover{background:rgba(255,255,255,.08);border-color:rgba(13,158,142,.3);}
+.s4-card-tag{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.s4-card h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;}
+.s4-card p{font-size:11.5px;color:rgba(255,255,255,.35);line-height:1.5;}
+.s4-dl-btn{
+  display:inline-flex;align-items:center;gap:8px;background:var(--teal);
+  border:none;border-radius:12px;padding:14px 28px;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;letter-spacing:.04em;transition:opacity .2s,transform .2s;
+}
+.s4-dl-btn:hover{opacity:.85;transform:translateY(-1px);}
+.s4-dl-btn svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.s4-footer{
+  padding:20px 44px;border-top:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.s4-footer a{font-size:11px;color:rgba(255,255,255,.25);text-decoration:none;letter-spacing:.06em;}
+.s4-footer a:hover{color:var(--teal);}
+
+/* ─── RESPONSIVE ───────────────────────────────────────────── */
+@media(max-width:900px){
+  :root{--sidebar:0px;}
+  #sidebar{display:none;}
+  #arr-prev{display:none;}
+  .sessions-grid{grid-template-columns:1fr;}
+  .s4-cards{grid-template-columns:1fr;}
+  .s2-body,.s3-body{padding:16px 20px 40px;}
+  .slide-topbar,.s3-topbar,.s4-header,.s1-header,.s4-footer{padding-left:20px;padding-right:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav id="sidebar">
+  <div class="nav-dot active" data-slide="0" onclick="goTo(0)">
+    <span class="nd-num">1</span>
+    <span class="nd-label">Cover</span>
+  </div>
+  <div class="nav-dot" data-slide="1" onclick="goTo(1)">
+    <span class="nd-num">2</span>
+    <span class="nd-label">Agenda</span>
+  </div>
+  <div class="nav-dot" data-slide="2" onclick="goTo(2)">
+    <span class="nd-num">3</span>
+    <span class="nd-label">Roadmap</span>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-dot" data-slide="3" onclick="goTo(3)" title="Phase 2">
+    <span class="nd-num" style="font-size:9px;color:rgba(255,255,255,.25)">3b</span>
+    <span class="nd-label">Optimiser Deep Dive</span>
+  </div>
+  <div class="nav-dot" data-slide="4" onclick="goTo(4)" title="Phase 2">
+    <span class="nd-num" style="font-size:9px;color:rgba(255,255,255,.25)">3c</span>
+    <span class="nd-label">Planning Suite Demo</span>
+  </div>
+  <div class="nav-dot" data-slide="5" onclick="goTo(5)" title="Phase 2">
+    <span class="nd-num" style="font-size:9px;color:rgba(255,255,255,.25)">3d</span>
+    <span class="nd-label">CTV Expansion</span>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-dot" data-slide="6" onclick="goTo(6)">
+    <span class="nd-num">4</span>
+    <span class="nd-label">Thank You</span>
+  </div>
+</nav>
+
+<!-- ARROW HINTS -->
+<div class="arrow-hint" id="arr-prev" onclick="prev()">
+  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</div>
+<div class="arrow-hint" id="arr-next" onclick="next()">
+  <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+</div>
+
+<!-- COUNTER -->
+<div id="counter">1 / 7</div>
+
+<!-- DECK -->
+<div id="deck">
+
+  <!-- ══ SLIDE 1 — COVER ══════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div class="s1-glow"></div>
+    <div class="s1-glow2"></div>
+    <div class="s1-header">
+      <div class="sp-brand">
+        <div class="sp-dot"><span>SP</span></div>
+        <span class="sp-name">silverpush</span>
+      </div>
+      <span class="s1-date">MARCH 2026</span>
+    </div>
+    <div class="s1-body">
+      <div class="s1-tag">
+        <div class="s1-tag-dot"></div>
+        <span>Global Leadership Summit 2026</span>
+      </div>
+      <h1 class="s1-title">Product <em>Innovation</em><br>Session</h1>
+      <p class="s1-sub">Day 1 · Silverpush Global Leadership Summit 2026</p>
+      <div class="s1-pills">
+        <div class="s1-pill">Session 1 · 11:00–1:30</div>
+        <div class="s1-pill">Session 2 · 2:30–4:30</div>
+        <div class="s1-pill">6 Products · 270 min</div>
+      </div>
+      <button class="s1-start-btn" onclick="goTo(1)">View Agenda →</button>
+    </div>
+    <div class="s1-footer">
+      <span>SILVERPUSH · INTERNAL USE ONLY</span>
+      <span>·</span>
+      <span>USE ← → ARROW KEYS TO NAVIGATE</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2 — AGENDA ═════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="slide-topbar">
+      <div class="sp-brand">
+        <div class="sp-dot"><span>SP</span></div>
+        <span class="sp-name">silverpush</span>
+      </div>
+      <span class="slide-label">Day 1 · Full Agenda</span>
+    </div>
+    <div class="s2-body">
+      <h2 class="s2-heading">Full Day Agenda</h2>
+      <div class="sessions-grid" id="agenda-grid">
+        <!-- Built by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3 — ROADMAP ════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="s3-topbar">
+      <div class="s3-topbar-left">
+        <div class="sp-brand">
+          <div class="sp-dot"><span>SP</span></div>
+          <span class="sp-name">silverpush</span>
+        </div>
+        <span class="slide-label">Product Roadmap 2026</span>
+      </div>
+      <div class="s3-topbar-right">
+        <div class="legend-bar-inline">
+          <span class="badge b-live">Live</span>
+          <span class="badge b-beta">Live · Beta</span>
+          <span class="badge b-dev">In Progress</span>
+          <span class="badge b-planning">Planning</span>
+          <span class="badge b-roadmap">Roadmap</span>
+        </div>
+        <button class="dl-btn" onclick="downloadRoadmap()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Roadmap
+        </button>
+      </div>
+    </div>
+    <div class="s3-body" id="roadmap-body">
+      <!-- Built by JS -->
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3b — OPTIMISER PLACEHOLDER ════════════════════ -->
+  <div class="slide ph-slide" id="s3b">
+    <div class="ph-inner">
+      <div class="ph-tag">Phase 2 · Coming Soon</div>
+      <div class="ph-icon">⚡</div>
+      <h2 class="ph-title">Optimiser — Deep Dive</h2>
+      <p class="ph-sub">Detailed walkthrough of AI optimisation levers, live demo, test results and client case studies.</p>
+      <div class="ph-drop" onclick="document.getElementById('ph-upload-3b').click()">
+        <div class="ph-drop-icon">📎</div>
+        <p><strong>Drop a .pptx</strong> or click to upload</p>
+        <input type="file" id="ph-upload-3b" accept=".pptx,.pdf" style="display:none" onchange="handleUpload(this,'ph-frame-3b')">
+      </div>
+      <div class="ph-or" style="margin:14px 0">— or paste embed URL —</div>
+      <input class="ph-input" id="ph-url-3b" placeholder="https://docs.google.com/presentation/d/..." onkeydown="if(event.key==='Enter')loadEmbed('ph-url-3b','ph-frame-3b')">
+      <div id="ph-frame-3b" style="margin-top:16px;width:100%;display:none;">
+        <iframe style="width:100%;height:420px;border:none;border-radius:12px;" id="ph-iframe-3b"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3c — PLANNING SUITE PLACEHOLDER ══════════════ -->
+  <div class="slide ph-slide" id="s3c">
+    <div class="ph-inner">
+      <div class="ph-tag">Phase 2 · Coming Soon</div>
+      <div class="ph-icon">🗺️</div>
+      <h2 class="ph-title">Planning Suite — Demo</h2>
+      <p class="ph-sub">Prototype walkthrough, planning engine demo, and client testimonial showcase.</p>
+      <div class="ph-drop" onclick="document.getElementById('ph-upload-3c').click()">
+        <div class="ph-drop-icon">📎</div>
+        <p><strong>Drop a .pptx</strong> or click to upload</p>
+        <input type="file" id="ph-upload-3c" accept=".pptx,.pdf" style="display:none" onchange="handleUpload(this,'ph-frame-3c')">
+      </div>
+      <div class="ph-or" style="margin:14px 0">— or paste embed URL —</div>
+      <input class="ph-input" id="ph-url-3c" placeholder="https://docs.google.com/presentation/d/..." onkeydown="if(event.key==='Enter')loadEmbed('ph-url-3c','ph-frame-3c')">
+      <div id="ph-frame-3c" style="margin-top:16px;width:100%;display:none;">
+        <iframe style="width:100%;height:420px;border:none;border-radius:12px;" id="ph-iframe-3c"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3d — CTV EXPANSION PLACEHOLDER ═══════════════ -->
+  <div class="slide ph-slide" id="s3d">
+    <div class="ph-inner">
+      <div class="ph-tag">Phase 2 · Coming Soon</div>
+      <div class="ph-icon">📺</div>
+      <h2 class="ph-title">CTV — Expansion</h2>
+      <p class="ph-sub">CTV positioning, SSP route, competitive angle, revenue flow and next-phase roadmap.</p>
+      <div class="ph-drop" onclick="document.getElementById('ph-upload-3d').click()">
+        <div class="ph-drop-icon">📎</div>
+        <p><strong>Drop a .pptx</strong> or click to upload</p>
+        <input type="file" id="ph-upload-3d" accept=".pptx,.pdf" style="display:none" onchange="handleUpload(this,'ph-frame-3d')">
+      </div>
+      <div class="ph-or" style="margin:14px 0">— or paste embed URL —</div>
+      <input class="ph-input" id="ph-url-3d" placeholder="https://docs.google.com/presentation/d/..." onkeydown="if(event.key==='Enter')loadEmbed('ph-url-3d','ph-frame-3d')">
+      <div id="ph-frame-3d" style="margin-top:16px;width:100%;display:none;">
+        <iframe style="width:100%;height:420px;border:none;border-radius:12px;" id="ph-iframe-3d"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4 — THANK YOU ══════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="s4-glow"></div>
+    <div class="s4-header">
+      <div class="sp-brand">
+        <div class="sp-dot"><span>SP</span></div>
+        <span class="sp-name">silverpush</span>
+      </div>
+      <button class="dl-btn" onclick="downloadRoadmap()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Roadmap
+      </button>
+    </div>
+    <div class="s4-body">
+      <p class="s4-kicker">Global Leadership Summit 2026</p>
+      <h1 class="s4-title">Day 1 <em>complete.</em></h1>
+      <p class="s4-sub">Thank you for joining the Product Innovation Session.</p>
+      <div class="s4-cards">
+        <div class="s4-card">
+          <div class="s4-card-tag">Coming Soon</div>
+          <h4>Optimiser — Deep Dive</h4>
+          <p>Full walkthrough of AI levers, live test results, and AdOps case studies.</p>
+        </div>
+        <div class="s4-card">
+          <div class="s4-card-tag">Coming Soon</div>
+          <h4>Planning Suite Demo</h4>
+          <p>Live planning engine demo, Trend Intelligence dashboard, and client testimonials.</p>
+        </div>
+        <div class="s4-card">
+          <div class="s4-card-tag">Coming Soon</div>
+          <h4>CTV Expansion</h4>
+          <p>CTV positioning deep-dive, SSP route breakdown, and competitive landscape.</p>
+        </div>
+      </div>
+      <button class="s4-dl-btn" onclick="downloadRoadmap()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Roadmap
+      </button>
+    </div>
+    <div class="s4-footer">
+      <a href="https://silverpush.co" target="_blank">silverpush.co</a>
+      <span style="font-size:11px;color:rgba(255,255,255,.15);">Internal Use Only · March 2026</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<script>
+// ─── NAVIGATION ─────────────────────────────────────────────
+const SLIDES = ['s1','s2','s3','s3b','s3c','s3d','s4'];
+const LABELS = ['Cover','Agenda','Roadmap','Optimiser Deep Dive','Planning Suite Demo','CTV Expansion','Thank You'];
+let cur = 0;
+
+function goTo(n){
+  if(n<0||n>=SLIDES.length)return;
+  const prev=SLIDES[cur], next=SLIDES[n];
+  document.getElementById(prev).classList.remove('active');
+  document.getElementById(prev).classList.add('prev');
+  setTimeout(()=>document.getElementById(prev).classList.remove('prev'),460);
+  document.getElementById(next).classList.add('active');
+  cur=n;
+  document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
+  document.getElementById('counter').textContent=`${n+1} / ${SLIDES.length}`;
+  document.getElementById('arr-prev').style.opacity=n===0?'0':'';
+  document.getElementById('arr-prev').style.pointerEvents=n===0?'none':'';
+}
+function next(){goTo(cur+1);}
+function prev(){goTo(cur-1);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+});
+// Hide prev arrow on first slide
+document.getElementById('arr-prev').style.opacity='0';
+document.getElementById('arr-prev').style.pointerEvents='none';
+
+// ─── PLACEHOLDER HELPERS ─────────────────────────────────────
+function loadEmbed(inputId,frameId){
+  const url=document.getElementById(inputId).value.trim();
+  if(!url)return;
+  let embedUrl=url;
+  // Convert Google Slides share URL to embed
+  if(url.includes('docs.google.com/presentation')){
+    embedUrl=url.replace('/edit','/embed').replace('/pub','/embed');
+    if(!embedUrl.includes('/embed'))embedUrl=url+'/embed';
+  }
+  document.getElementById(frameId).style.display='block';
+  document.getElementById(frameId.replace('frame','iframe')).src=embedUrl;
+}
+function handleUpload(input,frameId){
+  // File selected — show message (actual PPT rendering needs server-side)
+  const name=input.files[0]?.name||'';
+  if(name){
+    const frame=document.getElementById(frameId);
+    frame.style.display='block';
+    frame.innerHTML=`<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:32px;text-align:center;color:rgba(255,255,255,.5);font-size:13px;">
+      <div style="font-size:32px;margin-bottom:12px;">📎</div>
+      <strong style="color:#fff;">${name}</strong> uploaded.<br><br>
+      To embed: convert to Google Slides and paste the share URL above,<br>or export as PDF and use a PDF viewer embed.
+    </div>`;
+  }
+}
+
+// ─── DOWNLOAD ROADMAP ────────────────────────────────────────
+function downloadRoadmap(){
+  // Inline the full roadmap HTML as a blob download
+  const html = getRoadmapHTML();
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SP_Roadmap_2026.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ─── AGENDA DATA ─────────────────────────────────────────────
+const AVATARS={
+  'Mansi':    {bg:'#0D9E8E',init:'MM'},
+  'Harshit':  {bg:'#3B82F6',init:'H'},
+  'AdOps':    {bg:'#6B7280',init:'AO'},
+  'Mukund':   {bg:'#8B5CF6',init:'MK'},
+  'Tanvi':    {bg:'#F59E0B',init:'T'},
+  'Mansi + team':{bg:'#0D9E8E',init:'M+'},
+  'Vikas':    {bg:'#DC2626',init:'VS'},
+  'Tushar':   {bg:'#0284C7',init:'TC'},
+  'Vineet':   {bg:'#EA580C',init:'VN'},
+  'All reps': {bg:'#065F59',init:'ALL'},
+};
+function avatar(name){
+  const k=Object.keys(AVATARS).find(k=>name.includes(k))||name;
+  const av=AVATARS[k]||{bg:'#6B7280',init:name.slice(0,2).toUpperCase()};
+  return `<div class="avatar" style="background:${av.bg}" title="${name}">${av.init}</div>`;
+}
+function ownerAvatars(owners){
+  return owners.split('+').map(o=>o.trim()).map(o=>avatar(o)).join('');
+}
+
+const SESSION1=[
+  {time:'11:00–11:15',name:'Open',desc:'Show agenda for both sessions · Live/Beta/Roadmap snapshot',owners:'Mansi',dur:'15 min'},
+  {time:'11:15–11:35',name:'Signals Debrief',desc:'141 pre-summit signals — top themes, what sales is asking',owners:'Mansi',dur:'20 min'},
+  {time:'11:35–12:15',name:'Optimiser',desc:'Positioning · Live demo · Test results · AdOps testimonial · AI Product Bible chatbot reveal',owners:'Mansi + Harshit + AdOps',dur:'40 min'},
+  {time:'12:15–12:55',name:'Planning Suite + Trending',desc:'Prototype walkthrough · Planning engine demo · Tanvi client testimonial',owners:'Mukund + Tanvi',dur:'40 min'},
+  {time:'12:55–1:05',name:'Pop Quiz',desc:'10 questions on Optimiser + Planning Suite · Live leaderboard · Top 3 win',owners:'Mukund',dur:'10 min'},
+  {time:'1:05–1:30',name:'FAQ + Open Q&A',desc:'Surface quiz questions as FAQs · Open floor discussion',owners:'Mansi + team',dur:'25 min'},
+];
+const SESSION2=[
+  {time:'2:30–2:40',name:'Open',desc:'Recap Session 1 · Open stations link',owners:'Mansi',dur:'10 min'},
+  {time:'2:40–3:05',name:'CTV',desc:'Positioning · Types of offerings · Case analysis · Revenue flow · Reporting · SSP route · Competitive angle',owners:'Vikas',dur:'25 min'},
+  {time:'3:05–3:20',name:'YouTube Self-Serve',desc:'Extensions · DV360 · Demand Gen · Minted · SP vs direct YouTube · Ad Spend Analysis USP',owners:'Tushar',dur:'15 min'},
+  {time:'3:20–3:35',name:'TikTok & Meta',desc:'Best practices · Guardrails · Contextual vs legacy · Lookup tools · Brand safety',owners:'Vineet + Mukund',dur:'15 min'},
+  {time:'3:35–4:15',name:'Open Stations',desc:'All 5 live simultaneously: CTV · YouTube · Social · Parallels · Optimiser',owners:'All reps',dur:'40 min'},
+  {time:'4:15–4:30',name:'Wrap Up',desc:'Closing remarks · Next steps · What gets shared externally',owners:'Mansi',dur:'15 min'},
+];
+
+function buildSessionCard(session,blocks,cls){
+  const blockRows=blocks.map(b=>`
+    <div class="block-row">
+      <div class="block-time">${b.time}</div>
+      <div class="block-content">
+        <div class="block-name">${b.name}</div>
+        <div class="block-desc">${b.desc}</div>
+        <div class="block-meta">
+          <div class="avatar-group">${ownerAvatars(b.owners)}</div>
+          <span class="dur-pill">${b.dur}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  const [sNum,sTime,sDur]=session;
+  return `<div class="session-card ${cls}">
+    <div class="session-hd">
+      <div class="session-hd-left">
+        <span class="session-num">${sNum}</span>
+        <span class="session-time">${sTime}</span>
+      </div>
+      <span class="session-dur">${sDur}</span>
+    </div>
+    <div class="session-blocks">${blockRows}</div>
+  </div>`;
+}
+
+document.getElementById('agenda-grid').innerHTML=
+  buildSessionCard(['SESSION 1','11:00 – 1:30','150 min'],SESSION1,'session1')+
+  buildSessionCard(['SESSION 2','2:30 – 4:30','120 min'],SESSION2,'session2');
+
+// ─── ROADMAP DATA ────────────────────────────────────────────
+const QUARTERS=['Q4 25-26','Q1 26-27','Q2 26-27','Q3 26-27','Q4 26-27'];
+const STATUS_ORDER=['live','beta','dev','planning','roadmap'];
+const STATUS={
+  live:{label:'Live',cls:'b-live'},
+  beta:{label:'Live · Beta',cls:'b-beta'},
+  dev:{label:'In Progress',cls:'b-dev'},
+  planning:{label:'Planning',cls:'b-planning'},
+  roadmap:{label:'Roadmap',cls:'b-roadmap'}
+};
+const GANTT_CLR={live:'#0D9E8E',beta:'#F59E0B',dev:'#3B82F6',planning:'#8B5CF6',roadmap:'#9CA3AF'};
+
+const SECTIONS=[
+  {id:'optimiser',icon:'⚡',title:'Optimiser',desc:'AI-driven campaign optimisation across YouTube, TikTok, Meta, Google Ads',color:'#1E4FD8',bg:'#EEF4FF',poc:'Vivek Kumar',
+   features:[
+    {title:'Optimization Techniques — Bids, Budgets, Bid Multiplier, Time Parting, Placement',status:'beta',launch:null,desc:'Core optimization levers live in beta.'},
+    {title:'Optimization Targets — Pace, Performance, Cost',status:'beta',launch:null,desc:'Automated KPI target management.'},
+    {title:'Reason for Each Optimization',status:'dev',launch:null,desc:'Human-readable reason for every recommendation.'},
+    {title:'Execution & Recommendation History',status:'planning',launch:null,desc:'Full visibility into recommendations applied.'},
+    {title:'Client Campaign Data Analysis',status:'planning',launch:null,desc:'Train Optimiser on historical client data.'},
+    {title:'Optimization Techniques — Line Items, Adgroups, Demo & Geo Analysis',status:'planning',launch:null,desc:'Expanded scope across creative and geo dimensions.'},
+    {title:'Optimization Targets — Reach, Frequency, Action (Conversion)',status:'planning',launch:null,desc:'Upper and lower funnel target expansion.'},
+    {title:'Optimizer for TikTok Campaigns',status:'planning',launch:null,desc:'Extend Optimiser coverage to TikTok.'},
+    {title:'Optimizer for Meta Campaigns',status:'planning',launch:null,desc:'Extend Optimiser coverage to Meta.'},
+    {title:'Optimizer for Google Ads Campaigns',status:'planning',launch:null,desc:'Extend Optimiser coverage to Google Ads.'},
+    {title:'Optimizer for Demand Gen (DV360) Campaigns',status:'roadmap',launch:null,desc:'DV360 Demand Gen optimization.'},
+    {title:'Brand Safety Control',status:'roadmap',launch:null,desc:'Prevent campaigns on brand-unsafe placements.'},
+    {title:'Optimizer with 3rd Party Data Integration',status:'planning',launch:null,desc:'Enrich optimization with external data signals.'},
+  ]},
+  {id:'planning',icon:'🗺️',title:'Planning Suite',desc:'Intelligent planning and trend intelligence across platforms',color:'#7C3AED',bg:'#F5F0FF',poc:'Mukund Mishra / Tushar Singh Chauhan',
+   features:[
+    {title:'Google Ads Extension (Revamp)',status:'roadmap',launch:'Q4 25-26',desc:'Revamped Google Ads extension.'},
+    {title:'Trend Intelligence Dashboard',status:'beta',launch:'Q1 26-27',desc:'Live trend signals to inform planning.'},
+    {title:'DV360 Extension (Revamp)',status:'planning',launch:'Q2 26-27',desc:'Revamped DV360 extension for self-serve.'},
+    {title:'Planning Suite — YouTube',status:'dev',launch:'Q3 26-27',desc:'Full planning suite for YouTube campaigns.'},
+    {title:'Planning Suite — CTV + Open Web',status:'planning',launch:'Q4 26-27',desc:'Extend planning to CTV and Open Web.'},
+    {title:'Planning Suite — TikTok',status:'planning',launch:'Q4 26-27',desc:'Planning suite expansion to TikTok.'},
+    {title:'Planning Suite — Meta',status:'planning',launch:'Q4 26-27',desc:'Planning suite expansion to Meta.'},
+  ]},
+  {id:'insights',icon:'📊',title:'Insights & BI',desc:'Dashboards, reporting pipelines and AI-powered analytics',color:'#0D9E8E',bg:'#D0F3EF',poc:'Vikas Sisodia / Vivek Kumar',
+   features:[
+    {title:'BI Dashboard — Managed',status:'live',launch:'Q2 25-26',desc:'Intelligence Dashboard for managed campaigns.'},
+    {title:'TikTok BI Dashboard — Daily Update Pipeline',status:'live',launch:'Q4 25-26',desc:'Daily reporting pipeline for TikTok.'},
+    {title:'AI Insight Chatbot (BI Report YouTube)',status:'beta',launch:null,desc:'Ask questions about YouTube BI report in natural language.'},
+    {title:'Meta BI Dashboard — Daily Update Pipeline',status:'dev',launch:'Q1 26-27',desc:'Daily reporting pipeline for Meta.'},
+    {title:'BI Dashboard — Self Serve',status:'planning',launch:null,desc:'BI dashboard for self-serve campaigns through deals.'},
+    {title:'Unified Dashboard — Multi Platform',status:'planning',launch:null,desc:'One URL for a client across all platforms.'},
+    {title:'Google Ads Reporting Pipeline',status:'planning',launch:null,desc:'Reporting pipeline for Google Ads.'},
+  ]},
+  {id:'mirrors-yt',icon:'🎯',title:'Mirrors — YouTube',desc:'Contextual intelligence and self-serve capabilities for YouTube',color:'#DC2626',bg:'#FEF2F2',poc:'Tushar Singh Chauhan',
+   features:[
+    {title:'Minted Segments',status:'beta',launch:'Q4 25-26',desc:'Proprietary audience segments from YouTube content signals.'},
+    {title:'Demand Gen',status:'beta',launch:'Q4 25-26',desc:'Demand Gen campaign support via YouTube.'},
+    {title:'Insights with Google Ads Extension',status:'planning',launch:null,desc:'Surface intelligence within Google Ads extension flow.'},
+  ]},
+  {id:'mirrors-social',icon:'📱',title:'Mirrors — Social',desc:'TikTok and Meta contextual capabilities',color:'#EA580C',bg:'#FFF7ED',poc:'Vineet / Tushar Singh Chauhan',
+   features:[
+    {title:'Handle Removing of Contextual Signals',status:'planning',launch:null,desc:'Manage contextual signal removal gracefully.'},
+    {title:'TikTok Shoppable',status:'roadmap',launch:'Q1 26-27',desc:'Expand TikTok to shoppable ads.'},
+    {title:'TikTok Self Serve (Extension)',status:'roadmap',launch:'Q3 26-27',desc:'Enable self-serve via extension route on TikTok.'},
+  ]},
+  {id:'scm',icon:'🔧',title:'SCM & Platform',desc:'Core platform capabilities, integrations and go-live infrastructure',color:'#0284C7',bg:'#E0F2FE',poc:'Vikas Sisodia / Tushar Singh Chauhan',
+   features:[
+    {title:'Pubmatic Integration Live',status:'live',launch:'Q4 25-26',desc:'Line Items and Adgroups. Higher margin, enables wide range of DSPs globally.'},
+    {title:'YT Shoppable',status:'planning',launch:null,desc:'Shoppable YouTube ad format support.'},
+    {title:'All Products Go-Live Platform',status:'roadmap',launch:'Q3 26-27',desc:'One unified go-live platform for CS covering all products.'},
+    {title:'Multi Buying Models ACM',status:'roadmap',launch:null,desc:'Support for multiple buying models within ACM.'},
+    {title:'Reporting Dashboard — Open Web',status:'planning',launch:null,desc:'Reporting dashboard for Open Web campaigns.'},
+  ]},
+];
+
+function initials(n){return n.split(/[\s\/]/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();}
+
+function statusSummary(features){
+  const c={};features.forEach(f=>{c[f.status]=(c[f.status]||0)+1;});
+  return STATUS_ORDER.filter(k=>c[k]).map(k=>`<span class="badge ${STATUS[k].cls}">${c[k]} ${STATUS[k].label}</span>`).join('');
+}
+
+function qIdx(q){
+  if(!q)return -1;
+  const m={'q4 25-26':0,'q1 26-27':1,'q2 26-27':2,'q3 26-27':3,'q4 26-27':4};
+  return m[q.toLowerCase().trim()]??-1;
+}
+
+function buildGantt(features,color,secColor){
+  const wl=features.filter(f=>f.launch);if(!wl.length)return '';
+  const qRow=QUARTERS.map(q=>`<div class="gantt-q">${q}</div>`).join('');
+  const rows=wl.map(f=>{
+    const qi=qIdx(f.launch);
+    const cells=QUARTERS.map((_,i)=>{
+      if(i===qi){const c=GANTT_CLR[f.status]||color;return `<div class="gantt-cell"><div class="gantt-bar" style="background:${c}">${STATUS[f.status].label}</div></div>`;}
+      return `<div class="gantt-cell"><div class="gantt-empty"></div></div>`;
+    }).join('');
+    const lbl=f.title.length>38?f.title.slice(0,38)+'…':f.title;
+    return `<div class="gantt-row"><div class="gantt-label" title="${f.title}">${lbl}</div><div class="gantt-tl">${cells}</div></div>`;
+  }).join('');
+  return `<div class="gantt-wrap" style="--sec-color:${secColor}">
+    <div class="gantt-title">Feature Timeline — Gantt View (features with target quarters)</div>
+    <div class="gantt-header-row"><div class="gantt-lbl-spacer"></div><div class="gantt-q-row">${qRow}</div></div>
+    <div class="gantt-grid">${rows}</div>
+  </div>`;
+}
+
+function buildTable(features,color,poc){
+  const sorted=[...features].sort((a,b)=>STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status));
+  const rows=sorted.map(f=>`
+    <tr>
+      <td class="td-feature">${f.title}</td>
+      <td><span class="badge ${STATUS[f.status].cls}">${STATUS[f.status].label}</span></td>
+      <td class="td-desc">${f.desc||''}</td>
+      <td class="td-launch">${f.launch||'—'}</td>
+    </tr>`).join('');
+  const pocHtml=poc.split('/').map(p=>p.trim()).map(p=>`<span class="poc-tag"><span class="poc-avatar" style="background:${color}">${initials(p)}</span><span class="poc-name">${p}</span></span>`).join('');
+  return `<div class="poc-bar"><span class="poc-label">Owner</span>${pocHtml}</div>
+    <table class="feat-table">
+      <thead><tr><th>Feature</th><th>Status</th><th>Description</th><th>Target Quarter</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function buildSection(sec){
+  return `<div class="rm-section" id="rm-${sec.id}" style="--sec-color:${sec.color};--sec-bg:${sec.bg}">
+    <div class="rm-section-hd" onclick="rmToggle('${sec.id}')">
+      <div class="rm-sec-icon">${sec.icon}</div>
+      <div class="rm-sec-info"><h3>${sec.title}</h3><p>${sec.desc}</p></div>
+      <div class="rm-sec-right">
+        <div class="status-pills">${statusSummary(sec.features)}</div>
+        <span class="count-pill">${sec.features.length} features</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="rm-expand">${buildTable(sec.features,sec.color,sec.poc)}${buildGantt(sec.features,sec.color,sec.color)}</div>
+  </div>`;
+}
+
+document.getElementById('roadmap-body').innerHTML=SECTIONS.map(buildSection).join('');
+function rmToggle(id){document.getElementById('rm-'+id).classList.toggle('open');}
+
+// ─── ROADMAP HTML GENERATOR (for download) ───────────────────
+function getRoadmapHTML(){
+  // Return the standalone roadmap HTML (content from SP_Roadmap_2026_v3.html inlined)
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silverpush · Product Roadmap 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F6FB;--surface:#FFFFFF;--border:#E2E6F0;--text:#0D1B3E;--muted:#6B7280;--navy:#0D1B3E;--teal:#0D9E8E;--live:#0D9E8E;--live-lt:#D0F3EF;--beta:#F59E0B;--beta-lt:#FEF3C7;--dev:#3B82F6;--dev-lt:#DBEAFE;--planning:#8B5CF6;--plan-lt:#EDE9FE;--roadmap:#9CA3AF;--road-lt:#F3F4F6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+header{background:var(--navy);padding:30px 48px 26px;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-40px;right:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(13,158,142,.22) 0%,transparent 70%);pointer-events:none;}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand-dot{width:38px;height:38px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-dot span{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#fff;letter-spacing:.04em;}
+.brand h1{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;line-height:1.2;}
+.brand p{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.04em;}
+.header-note{font-size:11px;color:rgba(255,255,255,.35);text-align:right;line-height:1.8;}
+.legend-bar{background:#fff;border-bottom:1px solid var(--border);padding:11px 48px;}
+.legend-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.legend-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:8px;}
+.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.03em;white-space:nowrap;}
+.b-live{background:var(--live-lt);color:#065F59;}
+.b-beta{background:var(--beta-lt);color:#92400E;}
+.b-dev{background:var(--dev-lt);color:#1E40AF;}
+.b-planning{background:var(--plan-lt);color:#5B21B6;}
+.b-roadmap{background:var(--road-lt);color:#4B5563;}
+main{max-width:1400px;margin:0 auto;padding:30px 48px 80px;display:flex;flex-direction:column;gap:13px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:box-shadow .2s;}
+.section:hover{box-shadow:0 4px 18px rgba(0,0,0,.08);}
+.section-hd{display:flex;align-items:center;gap:16px;padding:16px 22px;cursor:pointer;user-select:none;border-left:5px solid var(--sec-color);transition:background .15s;}
+.section-hd:hover{background:#FAFBFE;}
+.sec-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--sec-bg);}
+.sec-info{flex:1;}
+.sec-info h2{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--sec-color);}
+.sec-info p{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.count-pill{background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:2px 10px;font-size:11px;color:var(--muted);font-weight:500;}
+.chevron{width:18px;height:18px;color:var(--muted);transition:transform .25s ease;flex-shrink:0;}
+.section.open .chevron{transform:rotate(180deg);}
+.expand-wrap{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
+.section.open .expand-wrap{max-height:5000px;}
+.poc-bar{padding:9px 22px 8px;background:#F9FAFD;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.poc-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-right:4px;}
+.poc-tag{display:inline-flex;align-items:center;gap:5px;margin-right:8px;}
+.poc-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Syne',sans-serif;}
+.poc-name{font-size:11.5px;color:var(--text);}
+.feat-table{width:100%;border-collapse:collapse;}
+.feat-table thead tr{background:var(--navy);}
+.feat-table thead th{font-family:'Syne',sans-serif;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.08em;padding:9px 14px;text-align:left;white-space:nowrap;}
+.feat-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+.feat-table tbody tr:last-child{border-bottom:none;}
+.feat-table tbody tr:hover{background:#F9FAFD;}
+.feat-table td{padding:10px 14px;font-size:12.5px;vertical-align:middle;color:var(--text);}
+.td-feature{font-weight:500;min-width:220px;max-width:340px;}
+.td-desc{font-size:11.5px;color:var(--muted);}
+.td-launch{font-size:11px;color:var(--muted);white-space:nowrap;font-weight:500;}
+.gantt-wrap{padding:16px 22px 20px;background:#F4F6FB;border-top:2px solid var(--border);}
+.gantt-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.gantt-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--sec-color);border-radius:2px;}
+.gantt-header-row{display:flex;align-items:center;margin-bottom:5px;}
+.gantt-lbl-spacer{width:230px;flex-shrink:0;}
+.gantt-q-row{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.gantt-q{font-size:10px;font-weight:700;color:var(--navy);text-align:center;font-family:'Syne',sans-serif;letter-spacing:.04em;padding:3px 0;background:#fff;border-radius:4px;border:1px solid var(--border);}
+.gantt-grid{display:flex;flex-direction:column;gap:6px;}
+.gantt-row{display:flex;align-items:center;gap:0;min-height:26px;}
+.gantt-label{width:230px;flex-shrink:0;font-size:11px;color:var(--text);padding-right:12px;line-height:1.3;}
+.gantt-tl{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.gantt-cell{height:22px;border-radius:4px;}
+.gantt-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gantt-empty{height:100%;background:rgba(0,0,0,.04);border-radius:4px;}
+.status-pills{display:flex;gap:5px;flex-wrap:wrap;}
+footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:#fff;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-dot"><span>SP</span></div>
+      <div><h1>Product Roadmap 2026</h1><p>Global Leadership Summit · Day 1 · Product Innovation Session</p></div>
+    </div>
+    <div class="header-note"><p>Click any product to expand features + Gantt view</p><p>Updated March 2026</p></div>
+  </div>
+</header>
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-label">Status:</span>
+    <span class="badge b-live">Live</span>
+    <span class="badge b-beta">Live · Beta</span>
+    <span class="badge b-dev">In Progress</span>
+    <span class="badge b-planning">Planning</span>
+    <span class="badge b-roadmap">Roadmap</span>
+  </div>
+</div>
+<main id="main"></main>
+<footer>Silverpush · Internal Use Only · Global Leadership Summit 2026</footer>
+<script>
+const QUARTERS=['Q4 25-26','Q1 26-27','Q2 26-27','Q3 26-27','Q4 26-27'];
+const STATUS_ORDER=['live','beta','dev','planning','roadmap'];
+const STATUS={live:{label:'Live',cls:'b-live'},beta:{label:'Live · Beta',cls:'b-beta'},dev:{label:'In Progress',cls:'b-dev'},planning:{label:'Planning',cls:'b-planning'},roadmap:{label:'Roadmap',cls:'b-roadmap'}};
+const GANTT_CLR={live:'#0D9E8E',beta:'#F59E0B',dev:'#3B82F6',planning:'#8B5CF6',roadmap:'#9CA3AF'};
+const SECTIONS=${JSON.stringify(SECTIONS)};
+function initials(n){return n.split(/[\\s\\/]/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();}
+function statusSummary(features){const c={};features.forEach(f=>{c[f.status]=(c[f.status]||0)+1;});return STATUS_ORDER.filter(k=>c[k]).map(k=>\`<span class="badge \${STATUS[k].cls}">\${c[k]} \${STATUS[k].label}</span>\`).join('');}
+function qIdx(q){if(!q)return -1;const m={'q4 25-26':0,'q1 26-27':1,'q2 26-27':2,'q3 26-27':3,'q4 26-27':4};return m[q.toLowerCase().trim()]??-1;}
+function buildGantt(features,color){const wl=features.filter(f=>f.launch);if(!wl.length)return '';const qRow=QUARTERS.map(q=>\`<div class="gantt-q">\${q}</div>\`).join('');const rows=wl.map(f=>{const qi=qIdx(f.launch);const cells=QUARTERS.map((_,i)=>{if(i===qi){const c=GANTT_CLR[f.status]||color;return \`<div class="gantt-cell"><div class="gantt-bar" style="background:\${c}">\${STATUS[f.status].label}</div></div>\`;}return \`<div class="gantt-cell"><div class="gantt-empty"></div></div>\`;}).join('');const lbl=f.title.length>40?f.title.slice(0,40)+'…':f.title;return \`<div class="gantt-row"><div class="gantt-label" title="\${f.title}">\${lbl}</div><div class="gantt-tl">\${cells}</div></div>\`;}).join('');return \`<div class="gantt-wrap" style="--sec-color:\${color}"><div class="gantt-title">Feature Timeline (Gantt View — features with target quarters)</div><div class="gantt-header-row"><div class="gantt-lbl-spacer"></div><div class="gantt-q-row">\${qRow}</div></div><div class="gantt-grid">\${rows}</div></div>\`;}
+function buildTable(features,color,poc){const sorted=[...features].sort((a,b)=>STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status));const rows=sorted.map(f=>\`<tr><td class="td-feature">\${f.title}</td><td><span class="badge \${STATUS[f.status].cls}">\${STATUS[f.status].label}</span></td><td class="td-desc">\${f.desc||''}</td><td class="td-launch">\${f.launch||'—'}</td></tr>\`).join('');const pocHtml=poc.split('/').map(p=>p.trim()).map(p=>\`<span class="poc-tag"><span class="poc-avatar" style="background:\${color}">\${initials(p)}</span><span class="poc-name">\${p}</span></span>\`).join('');return \`<div class="poc-bar"><span class="poc-label">Owner</span>\${pocHtml}</div><table class="feat-table"><thead><tr><th>Feature</th><th>Status</th><th>Description</th><th>Target Launch</th></tr></thead><tbody>\${rows}</tbody></table>\`;}
+function buildSection(sec){return \`<div class="section" id="sec-\${sec.id}" style="--sec-color:\${sec.color};--sec-bg:\${sec.bg}"><div class="section-hd" onclick="toggle('\${sec.id}')"><div class="sec-icon">\${sec.icon}</div><div class="sec-info"><h2>\${sec.title}</h2><p>\${sec.desc}</p></div><div class="sec-right"><div class="status-pills">\${statusSummary(sec.features)}</div><span class="count-pill">\${sec.features.length} features</span><svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div></div><div class="expand-wrap">\${buildTable(sec.features,sec.color,sec.poc)}\${buildGantt(sec.features,sec.color)}</div></div>\`;}
+document.getElementById('main').innerHTML=SECTIONS.map(buildSection).join('');
+function toggle(id){document.getElementById('sec-'+id).classList.toggle('open');}
+<\/script>
+</body>
+</html>`;
+}
+</script>
+</body>
+</html>
